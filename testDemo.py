@@ -19,15 +19,17 @@ set global max_allowed_packet=1000000000;
 
 execute result:
 num=4000000
+func_mysqldb
+354.47 sec
 func_mysqldb1
-1, 51.76sec
-5, 51.57sec
-10, 51.67sec
-20, 51.52
-30, 52.14
-50, 53.82
-100, 51.66
-200, 50.93
+1, 51.76 sec
+5, 51.57 sec
+10, 51.67 sec
+20, 51.52 sec
+30, 52.14 sec
+50, 53.82 sec
+100, 51.66 sec
+200, 50.93 sec
 
 '''
 
