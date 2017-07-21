@@ -3,7 +3,7 @@
 
 '''
 computer with 1cpu,4kernel,4G mem 
-mysql table test:
+mysql table test1:
 +--------+-------------+------+-----+---------+-------+
 | Field  | Type        | Null | Key | Default | Extra |
 +--------+-------------+------+-----+---------+-------+
@@ -14,14 +14,37 @@ mysql table test:
 | weight | int(11)     | YES  |     | NULL    |       |
 +--------+-------------+------+-----+---------+-------+
 
+mysql table test2:
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| name   | varchar(20) | YES  | mul | NULL    |       |
+| birth  | date        | YES  |     | NULL    |       |
+| id     | int(11)     | NO   | mul | NULL    |       |
+| height | int(11)     | YES  |     | NULL    |       |
+| weight | int(11)     | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+
+mysql table test3:
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| name   | varchar(20) | YES  | mul | NULL    |       |
+| birth  | date        | YES  |     | NULL    |       |
+| id     | int(11)     | NO   | uni | NULL    |       |
+| height | int(11)     | YES  |     | NULL    |       |
+| weight | int(11)     | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+
 set global net_buffer_length=1000000; 
 set global max_allowed_packet=1000000000;
 
 execute result:
-num=4000000
-func_mysqldb
+
+num=4000000  table1
+insertPerline
 354.47 sec
-func_mysqldb1
+insertDiv
 1, 51.76 sec
 5, 51.57 sec
 10, 51.67 sec
@@ -30,11 +53,12 @@ func_mysqldb1
 50, 53.82 sec
 100, 51.66 sec
 200, 50.93 sec
-
+--------------
+loadAll test1   test2  test3
+        11.81   326.3  locks exceed the lock table size
 '''
 
 import time
-# import os, time, re, threading
 import MySQLdb
 
 
@@ -47,11 +71,11 @@ def timeit(method):
         return result
     return timed    
 
-def clear_table():
+def clear_table(tableName):
     try:
         conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
         cur=conn.cursor()
-        cur.execute("truncate test1")
+        cur.execute("truncate %s"%tableName)
         cur.close()
         conn.close()
     except MySQLdb.Error,e:
@@ -59,7 +83,8 @@ def clear_table():
 
 # 每次insert一句
 @timeit
-def func_mysqldb(num,values):
+def insertPerline(values):
+    num=len(values)
     try:
         conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
         cur=conn.cursor()
@@ -73,32 +98,16 @@ def func_mysqldb(num,values):
     cur.close()
     conn.close()
 
-# 一次性insert
-@timeit
-def func_mysqldb2(values):
-    try:
-        conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
-        cur=conn.cursor()
-        # mysqldb的占位符统一写为%s,区别于python
-        stmt="insert into test1(name, birth, id, height, weight) values(%s,%s,%s,%s,%s)"
-        # 该语句对insert做专门的优化,相当于执行一条insert: 
-        cur.executemany(stmt,values)
-        conn.commit()
-    except MySQLdb.Error,e:
-        print "Mysql Error %d: %s" % (e.args[0], e.args[1])
-        conn.rollback()
-    cur.close()
-    conn.close()
-
 # 分批insert,优化
 @timeit
-def func_mysqldb1(num,div,values):
+def insertDiv(div,values,tableName):
+    num=len(values)
     try:
         conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
         cur=conn.cursor()
         # mysqldb的占位符统一写为%s,区别于python
-        stmt="insert into test1(name, birth, id, height, weight) values(%s,%s,%s,%s,%s)"
-        
+        stmt1="insert into %s(name, birth, id, height, weight)"%tableName 
+        stmt=stmt1+" values(%s,%s,%s,%s,%s)"
         for i in range(div):
             # 该语句对insert做专门的优化,相当于执行一条insert: 
             cur.executemany(stmt,values[num/div*i:num/div*(i+1)])
@@ -109,14 +118,41 @@ def func_mysqldb1(num,div,values):
     cur.close()
     conn.close()
 
-if __name__ == '__main__':
-    num=4000000
-    values=[]    
-    for i in range(num):
-        values.append(('zhaoxiao','1993-01-01',0,170,130))
+# 一次性load
+@timeit
+def loadAll(tableName,mode='ignore'):
+    try:
+        conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
+        cur=conn.cursor()
+        stmt=("load data infile '/mnt/mysqlTest/data.txt' %s into table %s" 
+         " FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n'"%(mode,tableName)
+        )
+        cur.execute(stmt)
+        conn.commit()
+    except MySQLdb.Error,e:
+        print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+        conn.rollback()
+    cur.close()
+    conn.close()
 
-    clear_table()
-    func_mysqldb(num,values)
+
+if __name__ == '__main__':
+    tableName=['test1','test2','test3']
+    
+    # file=open(../'data.txt')
+    # lines=file.readlines()
+    # file.close()
+    # values=[]
+
+    # for line in lines:
+    #     l=line.rstrip('\n').split(',')
+    #     ll=(l[0][1:-1],l[1][1:-1],int(l[2]),int(l[3]),int(l[4]))
+    #     values.append(ll)
+    
+    clear_table(tableName[2])
+
+    # insertDiv(5,values,tableName)
+    loadAll(tableName[2],'ignore')
     # clear_table()
     # func_mysqldb2(values)
     # for i in [5,10,20,30,50,100,200]:
