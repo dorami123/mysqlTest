@@ -67,7 +67,7 @@ def timeit(method):
         ts = time.time()
         result = method(*args, **kw)
         te = time.time()
-        print ('%r, %2.2f sec' % (method.__name__, te-ts))
+        print ('%r, table: %s ,%2.2f sec' % (method.__name__,args[0],te-ts))
         return result
     return timed    
 
@@ -83,14 +83,15 @@ def clear_table(tableName):
 
 # 每次insert一句
 @timeit
-def insertPerline(values):
+def insertPerline(tableName,values):
     num=len(values)
     try:
         conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
         cur=conn.cursor()
 
         for i in range(num):
-            stmt="insert into test1(name, birth, id, height, weight) values('%s','%s',%d,%d,%d)"%values[i]
+            stmt1="insert into %s"%tableName
+            stmt=stmt1+"(name, birth, id, height, weight) values('%s','%s',%d,%d,%d)"%values[i]
             cur.execute(stmt)
         conn.commit()
     except MySQLdb.Error,e:
@@ -100,7 +101,7 @@ def insertPerline(values):
 
 # 分批insert,优化
 @timeit
-def insertDiv(div,values,tableName):
+def insertDiv(tableName,div,values):
     num=len(values)
     try:
         conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
@@ -139,7 +140,7 @@ def loadAll(tableName,mode='ignore'):
 if __name__ == '__main__':
     tableName=['test1','test2','test3']
     
-    # file=open(../'data.txt')
+    # file=open('../data.txt')
     # lines=file.readlines()
     # file.close()
     # values=[]
@@ -149,10 +150,11 @@ if __name__ == '__main__':
     #     ll=(l[0][1:-1],l[1][1:-1],int(l[2]),int(l[3]),int(l[4]))
     #     values.append(ll)
     
-    clear_table(tableName[2])
-
+    clear_table(tableName[0])
+    # insertDiv(tableName[0],5,values)
     # insertDiv(5,values,tableName)
-    loadAll(tableName[2],'ignore')
+    # loadAll(tableName[2],'ignore')
+    loadAll(tableName[0])
     # clear_table()
     # func_mysqldb2(values)
     # for i in [5,10,20,30,50,100,200]:
