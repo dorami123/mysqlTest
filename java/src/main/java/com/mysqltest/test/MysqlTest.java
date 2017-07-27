@@ -127,8 +127,8 @@ public class MysqlTest {
      * @return
      */
     public static void print(String key,long startTime,long endTime){
-    	System.out.println("每执行"+count+"次sql提交一次事务");
-    	System.out.println(key+"，用时"+ (endTime-startTime)/1000.0+" s,平均每秒执行"+(count*1000/(endTime-startTime))+"条");
+    	// System.out.println("每执行"+count+"次sql提交一次事务");
+    	System.out.println(key+",用时"+ (endTime-startTime)/1000.0+" s,平均每秒执行"+(count*1000/(endTime-startTime))+"条");
     	System.out.println("----------------------------------");
     }
     /** 
