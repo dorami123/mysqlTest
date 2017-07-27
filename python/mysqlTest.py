@@ -44,7 +44,7 @@ execute result:
 num=4000000  table1
 insertPerline
 354.47 sec
-insertDiv
+insertBatch
 1, 51.76 sec
 5, 51.57 sec
 10, 51.67 sec
@@ -101,7 +101,7 @@ def insertPerline(tableName,values,mode='ignore'):
 
 # 分批insert,优化
 @timeit
-def insertDiv(tableName,div,values,mode='ignore'):
+def insertBatch(tableName,div,values,mode='ignore'):
     num=len(values)
     try:
         conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
@@ -154,7 +154,7 @@ if __name__ == '__main__':
         insertPerline(tableName[i],values)
 
         clear_table(tableName[i])
-        insertDiv(tableName[i],5,values)
+        insertBatch(tableName[i],5,values)
 
         clear_table(tableName[i])
         loadAll(tableName[i])
@@ -163,8 +163,8 @@ if __name__ == '__main__':
         loadAll(tableName[i],'replace')
 
         print('\n')
-    # insertDiv(tableName[0],5,values)
-    # insertDiv(5,values,tableName)
+    # insertBatch(tableName[0],5,values)
+    # insertBatch(5,values,tableName)
     # loadAll(tableName[2],'ignore')
     # clear_table()
     # func_mysqldb2(values)
