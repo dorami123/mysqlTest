@@ -1,4 +1,33 @@
--- key [mul,uni,pri]
+-- test1
+-- +--------+-------------+------+-----+---------+-------+
+-- | Field  | Type        | Null | Key | Default | Extra |
+-- +--------+-------------+------+-----+---------+-------+
+-- | name   | varchar(20) | YES  |     | NULL    |       |
+-- | birth  | date        | YES  |     | NULL    |       |
+-- | id     | int(11)     | NO   |     | NULL    |       |
+-- | height | int(11)     | YES  |     | NULL    |       |
+-- | weight | int(11)     | YES  |     | NULL    |       |
+-- +--------+-------------+------+-----+---------+-------+
+-- test2
+-- +--------+-------------+------+-----+---------+----------------+
+-- | Field  | Type        | Null | Key | Default | Extra          |
+-- +--------+-------------+------+-----+---------+----------------+
+-- | name   | varchar(20) | YES  | MUL | NULL    |                |
+-- | birth  | date        | YES  |     | NULL    |                |
+-- | id     | int(11)     | NO   | MUL | NULL    | auto_increment |
+-- | height | int(11)     | YES  |     | NULL    |                |
+-- | weight | int(11)     | YES  |     | NULL    |                |
+-- +--------+-------------+------+-----+---------+----------------+
+-- test3
+-- +--------+-------------+------+-----+---------+----------------+
+-- | Field  | Type        | Null | Key | Default | Extra          |
+-- +--------+-------------+------+-----+---------+----------------+
+-- | name   | varchar(20) | YES  | MUL | NULL    |                |
+-- | birth  | date        | YES  |     | NULL    |                |
+-- | id     | int(11)     | NO   | PRI | NULL    | auto_increment |
+-- | height | int(11)     | YES  |     | NULL    |                |
+-- | weight | int(11)     | YES  |     | NULL    |                |
+-- +--------+-------------+------+-----+---------+----------------+
 create database if not exists test;
 use test;  
 -- 无索引表
