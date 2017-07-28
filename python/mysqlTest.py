@@ -2,40 +2,7 @@
 # -*- coding: utf-8 -*-
 
 '''
-computer with 1cpu,2kernel,4G mem 
-mysql table test1:
-+--------+-------------+------+-----+---------+-------+
-| Field  | Type        | Null | Key | Default | Extra |
-+--------+-------------+------+-----+---------+-------+
-| name   | varchar(20) | YES  |     | NULL    |       |
-| birth  | date        | YES  |     | NULL    |       |
-| id     | int(11)     | NO   |     | NULL    |       |
-| height | int(11)     | YES  |     | NULL    |       |
-| weight | int(11)     | YES  |     | NULL    |       |
-+--------+-------------+------+-----+---------+-------+
-
-mysql table test2:
-+--------+-------------+------+-----+---------+-------+
-| Field  | Type        | Null | Key | Default | Extra |
-+--------+-------------+------+-----+---------+-------+
-| name   | varchar(20) | YES  | mul | NULL    |       |
-| birth  | date        | YES  |     | NULL    |       |
-| id     | int(11)     | NO   | mul | NULL    |       |
-| height | int(11)     | YES  |     | NULL    |       |
-| weight | int(11)     | YES  |     | NULL    |       |
-+--------+-------------+------+-----+---------+-------+
-
-mysql table test3:
-+--------+-------------+------+-----+---------+-------+
-| Field  | Type        | Null | Key | Default | Extra |
-+--------+-------------+------+-----+---------+-------+
-| name   | varchar(20) | YES  | mul | NULL    |       |
-| birth  | date        | YES  |     | NULL    |       |
-| id     | int(11)     | NO   | uni | NULL    |       |
-| height | int(11)     | YES  |     | NULL    |       |
-| weight | int(11)     | YES  |     | NULL    |       |
-+--------+-------------+------+-----+---------+-------+
-
+可选：
 set global net_buffer_length=1000000; 
 set global max_allowed_packet=1000000000;
 
@@ -61,21 +28,6 @@ loadAll test1   test2  test3
 import time
 import MySQLdb
 
-
-# def timeit(method):
-#     def timed(*args, **kw):
-#         ts = time.time()
-#         result = method(*args, **kw)
-#         te = time.time()
-#         print ('%r, table: %s ,%2.2f sec' % (method.__name__,args[0],te-ts))
-#         return result
-#     return timed    
-
-#     public static void print(String key,long startTime,long endTime){
-#         System.out.println("每执行"+count+"次sql提交一次事务");
-#         System.out.println(key+"，用时"+ (endTime-startTime)/1000.0+" s,平均每秒执行"+(count*1000/(endTime-startTime))+"条");
-#         System.out.println("----------------------------------");
-#     }
 
 def printResults(key,ts,te):
     speed=100000/(te-ts)
