@@ -8,7 +8,8 @@ birth date,
 id int NOT NULL,
 height int,
 weight int
-)engine = MyISAM;  
+)engine = MyISAM;
+-- )engine = MyISAM;  
 
 -- 有索引表
 create table if not exists test2(   
@@ -19,7 +20,8 @@ height int,
 weight int,
 index (name),
 index (id)
-)engine = MyISAM; 
+)engine = MyISAM;
+-- )engine = MyISAM; 
 
 -- 有唯一索引表
 create table if not exists test3(   
@@ -30,6 +32,7 @@ height int,
 weight int,
 index (name)
 )engine = MyISAM;
+-- )engine = MyISAM;
 
 -- SELECT * INTO OUTFILE '/mnt/mysqlTest/data.txt'
 -- FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
