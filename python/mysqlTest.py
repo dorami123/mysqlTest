@@ -78,7 +78,8 @@ import MySQLdb
 #     }
 
 def printResults(key,ts,te):
-    print(key+",用时"+ (te-ts)+" s,平均每秒执行"+(40000/(te-ts))+"条")
+    speed=100000/(te-ts)
+    print(key+",用时 %f"%(te-ts)+" s,平均每秒执行 %d"%speed+"条")
     print("----------------------------------")
 
 def getConn():
@@ -86,7 +87,7 @@ def getConn():
         ts=time.time()
         conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
         te=time.time()
-        print("创建连接用时%d s"%(te-ts))
+        print("创建连接用时%f ms"%((te-ts)*1000))
         return conn
     except MySQLdb.Error,e:
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])        
@@ -120,7 +121,7 @@ def insertPerline(tableName,values,mode='ignore'):
             cur.execute(stmt)
         conn.commit()
         te=time.time()
-        printResults("MySql依次插入4万条记录到"+tableName,ts,te)
+        printResults("MySql依次插入10万条记录到"+tableName,ts,te)
     except MySQLdb.Error,e:
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])
     cur.close()
@@ -143,7 +144,7 @@ def insertBatch(tableName,div,values,mode='ignore'):
             cur.executemany(stmt,values[num/div*i:num/div*(i+1)])
         conn.commit()
         te=time.time()
-        printResults("MySql批量插入4万条记录到"+tableName,ts,te)
+        printResults("MySql批量插入10万条记录到"+tableName,ts,te)
     except MySQLdb.Error,e:
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])
         conn.rollback()
@@ -164,7 +165,7 @@ def loadAll(tableName,mode='ignore',disable=False):
         cur.execute(stmt)
         conn.commit()
         te=time.time()
-        printResults("MySql一次load ("+mode+") 4万条记录到 "+tableName,ts,te)
+        printResults("MySql一次load ("+mode+") 10万条记录到 "+tableName,ts,te)
     except MySQLdb.Error,e:
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])
         conn.rollback()
@@ -185,19 +186,29 @@ if __name__ == '__main__':
         ll=(l[0][1:-1],l[1][1:-1],int(l[2]),int(l[3]),int(l[4]))
         values.append(ll)
     num=len(values)
+    # print(num)
+    clear_table(tableName[2])
+    insertBatch(tableName[2],10,values)
+    print('begin')
+    insertBatch(tableName[2],10,values)
+    clear_table(tableName[2])
+    insertBatch(tableName[2],10,values)
+    print('begin')
+    loadAll(tableName[2])
 
-    for i in range(3):
-        clear_table(tableName[i])
-        insertPerline(tableName[i],values)
 
-        clear_table(tableName[i])
-        insertBatch(tableName[i],5,values)
+    # for i in range(3):
+    #     clear_table(tableName[i])
+    #     insertPerline(tableName[i],values)
 
-        clear_table(tableName[i])
-        loadAll(tableName[i])
+    #     clear_table(tableName[i])
+    #     insertBatch(tableName[i],5,values)
 
-        clear_table(tableName[i])
-        loadAll(tableName[i],'replace')
+    #     clear_table(tableName[i])
+    #     loadAll(tableName[i])
+
+    #     clear_table(tableName[i])
+    #     loadAll(tableName[i],'replace')
     # insertBatch(tableName[0],5,values)
     # insertBatch(5,values,tableName)
     # loadAll(tableName[2],'ignore')
