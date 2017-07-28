@@ -24,7 +24,7 @@
 
 ##### 使用MyISAM引擎
 <div align=center><img width="640" height="240" src="https://github.com/dorami123/mysqlTest/blob/master/graph/batchsize_MyISAM.png"/></div>
-##### 小结：当写入无索引的表时，可以较小的batchsize表现出较优的性能；写入有索引的表时，需要测试更大的数据量。
+##### 小结：当写入无索引的表时，batchsize=1000条时表现出较优的性能；写入有索引的表时，在测试的范围内，batchsize越大，性能越好。需要测试更大的数据量。
 
 # 2.load和批量insert性能比较(空表和非空表)；
 
