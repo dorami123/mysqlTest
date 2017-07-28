@@ -21,7 +21,7 @@ public class MysqlTest {
 	static String mySqlPassword="cloudera";  
 	
 	//batchsize
-	// static int[] divPoint={count,10000,1000,100,10,1};
+	static int[] divPoint={count,10000,1000,100,10,1};
 	
     public static void main(String[] args) {  
         String[] tableName={"test1","test2","test3"};
