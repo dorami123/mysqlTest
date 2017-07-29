@@ -24,7 +24,9 @@
 
 ##### 使用MyISAM引擎
 <div align=center><img width="640" height="240" src="https://github.com/dorami123/mysqlTest/blob/master/graph/batchsize_MyISAM.png"/></div>
-##### 小结：当写入无索引的表时，batchsize=1000条时表现出较优的性能；写入有索引的表时，在测试的范围内，batchsize越大，性能越好。需要测试更大的数据量。
+
+##### 小结：
+当写入无索引的表时，batchsize=1000条时表现出较优的性能；写入有索引的表时，在测试的范围内，batchsize越大，性能越好。需要测试更大的数据量。
 
 # 2.load和批量insert性能比较(空表和非空表)；
 
@@ -41,18 +43,24 @@ MyISAM引擎的规律和InnoDB规律相似，但是MyISAM引擎的load性能要�
 
 ##### 两种引擎下，插入数据到已经有10万条数据的表test3，比较批量insert和load ignore的性能
 <div align=center><img width="400" height="240" src="https://github.com/dorami123/mysqlTest/blob/master/graph/loadVsInsert2.png"/></div>
-##### 小结：无论是空表还是非空表，load ignore的性能都优于insert。性能的提升根据引擎的类型有所不同。
+
+##### 小结：
+无论是空表还是非空表，load ignore的性能都优于insert。性能的提升根据引擎的类型有所不同。
 
 # 3.两种mysql引擎下load性能的比较；
 注：写到空表里
 ##### 比较批量insert和load ignore,load replace分别在两种引擎上的效果
 <div align=center><img width="640" height="480" src="https://github.com/dorami123/mysqlTest/blob/master/graph/loadVsInsert%20MyISAM%20vs%20InnoDB.png"/></div>
-##### 小结：当写入有索引的表时，MyISAM的批量insert性能要劣于InnoDB，而load性能要优于InnoDB。原因参考：
+
+##### 小结：
+当写入有索引的表时，MyISAM的批量insert性能要劣于InnoDB，而load性能要优于InnoDB。原因参考：
 
 [If you use LOAD DATA INFILE on an empty MyISAM table, all nonunique indexes are created in a separate batch (as for REPAIR TABLE). Normally, this makes LOAD DATA INFILE much faster when you have many indexes. ](https://dev.mysql.com/doc/refman/5.7/en/load-data.html)
 # 4.使用java和python的读入的比较；
 
 ##### 两种引擎下，使用空表test3，比较python和java的写性能
 <div align=center><img width="640" height="480" src="https://github.com/dorami123/mysqlTest/blob/master/graph/MyISAM%20vs%20InnoDB.png"/></div>
-##### 小结：显而易见，使用python和java访问mysql，性能接近。
+
+##### 小结：
+显而易见，使用python和java访问mysql，性能接近。
 
