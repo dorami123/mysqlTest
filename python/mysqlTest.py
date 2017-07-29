@@ -58,12 +58,10 @@ def clear_table(tableName):
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
 # 每次insert一句
-# @timeit
 def insertPerline(tableName,values,mode='ignore'):
     num=len(values)
     conn=getConn()
     try:
-        # conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
         ts=time.time()
         cur=conn.cursor()
 
@@ -80,13 +78,11 @@ def insertPerline(tableName,values,mode='ignore'):
     conn.close()
 
 # 分批insert,优化
-# @timeit
 def insertBatch(tableName,div,values,mode='ignore'):
     num=len(values)
     conn=getConn()
     try:
         ts=time.time()
-        # conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
         cur=conn.cursor()
         # mysqldb的占位符统一写为%s,区别于python
         stmt1="insert %s into %s"%(mode,tableName) 
@@ -104,12 +100,10 @@ def insertBatch(tableName,div,values,mode='ignore'):
     conn.close()
 
 # 一次性load
-# @timeit
 def loadAll(tableName,mode='ignore',disable=False):
     conn=getConn()
     try:
         ts=time.time()
-        # conn=MySQLdb.connect(host='localhost',user='root',passwd='cloudera',db='test',port=3306)
         cur=conn.cursor()
         stmt=("load data infile '/mnt/mysqlTest/data.txt' %s into table %s" 
          " FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n'"%(mode,tableName)
@@ -139,6 +133,7 @@ if __name__ == '__main__':
         values.append(ll)
     num=len(values)
     # print(num)
+    # ------insert和load到有数据的表3-----
     clear_table(tableName[2])
     insertBatch(tableName[2],10,values)
     print('begin')
