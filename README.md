@@ -41,7 +41,7 @@
 <div align=center><img width="640" height="240" src="https://github.com/dorami123/mysqlTest/blob/master/graph/loadVsInsert%20MyISAM.png"/></div>
 MyISAM引擎的规律和InnoDB规律相似，但是MyISAM引擎的load性能要远远优于批量insert。
 
-##### 两种引擎下，插入数据到已经有10万条数据的表test3，比较批量insert和load ignore的性能
+##### 两种引擎下，插入数据到已经有6万余条数据的表table3，比较批量insert和load ignore的性能
 <div align=center><img width="400" height="240" src="https://github.com/dorami123/mysqlTest/blob/master/graph/loadVsInsert2.png"/></div>
 
 ##### 小结：
