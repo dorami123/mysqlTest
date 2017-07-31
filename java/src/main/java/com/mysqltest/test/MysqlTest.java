@@ -13,22 +13,21 @@ import java.util.ArrayList;
 
 public class MysqlTest {  
 	
-	static int  count=100000;//总次数
-	
+	static int  count=10000000;//总次数
 	//一定要写rewriteBatchedStatements参数，Mysql批量插入才性能才理想
 	static String mySqlUrl="jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true";
 	static String mySqlUserName="root";  
 	static String mySqlPassword="cloudera";  
 	
 	//batchsize
-	static int[] divPoint={count,10000,1000,100,10,1};
+	// static int[] divPoint={count,10000,1000,100,10,1};
 	
     public static void main(String[] args) {  
         String[] tableName={"test1","test2","test3"};
         String inputPath="/mnt/mysqlTest/data.txt";
-        ArrayList<tableStruct> values;
+        List<tableStruct> values;
         try{
-            values=getData(inputPath);
+            values=getData(inputPath,10000000);
         }catch(IOException e){
             System.out.println("inputPath error");
             values=null;
@@ -51,11 +50,16 @@ public class MysqlTest {
         // }
 
         // -------java和python的比较-------------
-        // insertBatch(values,tableName[2],"ignore",10000);
+        // insertBatch(values,tableName[2],"ignore",100000);
         // loadAll(tableName[2],"ignore");
         // loadAll(tableName[2],"replace");
         // -------分批load-------------
         // loadAll(tableName[2],"ignore");
+        // -------java connection-------------
+
+        // mysql批量插入记录,div为划分的个数，每次重新建立连接
+        insertBatchReConn(values,tableName[2],"ignore",100);
+
     }  
 
     
@@ -69,9 +73,9 @@ public class MysqlTest {
     }; 
 
     // 读取文件
-    public static ArrayList<tableStruct> getData(String inputPath)throws IOException
+    public static List<tableStruct> getData(String inputPath,int count)throws IOException
     {
-        ArrayList<tableStruct> values=new ArrayList<tableStruct>();
+        List<tableStruct> values=new ArrayList<tableStruct>();
         FileReader reader = new FileReader(inputPath);
         BufferedReader br = new BufferedReader(reader);          
         for (int i=0;i<count;i++){
@@ -143,15 +147,16 @@ public class MysqlTest {
      * 打印信息
      * @return
      */
-    public static void print(String key,long startTime,long endTime){
+    public static void print(String key,long startTime,long endTime,int batchsize){
     	// System.out.println("每执行"+count+"次sql提交一次事务");
-    	System.out.println(key+",用时"+ (endTime-startTime)/1000.0+" s,平均每秒执行"+(count*1000/(endTime-startTime))+"条");
+        double speed=batchsize*1000.0/(endTime-startTime);
+    	System.out.println(key+",用时"+ (endTime-startTime)/1000.0+" s,平均每秒执行"+speed+"条");
     	System.out.println("----------------------------------");
     }
     /** 
-     * mysql非批量插入10万条记录 
+     * mysql非批量插入记录 
      */  
-    public static void insertPerline(ArrayList<tableStruct> values,String tableName,String mode){  
+    public static void insertPerline(List<tableStruct> values,String tableName,String mode){  
         String sql="insert "+mode+" into "+ tableName+ " values(?,?,?,?,?)";
         Connection conn=getConn("mysql");  
         clear(conn,tableName);
@@ -171,7 +176,7 @@ public class MysqlTest {
             }
             conn.commit();        
             long b=System.currentTimeMillis();  
-            print("MySql依次插入10万条记录到"+tableName,a,b);   
+            print("MySql依次插入"+count+"条记录到"+tableName,a,b,count);   
         } catch (Exception ex) {  
             ex.printStackTrace();  
         }finally{  
@@ -180,9 +185,9 @@ public class MysqlTest {
     }  
     
     /** 
-     * mysql批量插入10万条记录 
+     * mysql批量插入记录,point为batchsize 
      */  
-    public static void insertBatch(ArrayList<tableStruct> values, String tableName,String mode,int point){  
+    public static void insertBatch(List<tableStruct> values, String tableName,String mode,int point){  
         String sql="insert "+mode+" into "+ tableName+ " values(?,?,?,?,?)";
         Connection conn=getConn("mysql");  
         clear(conn,tableName);
@@ -198,12 +203,13 @@ public class MysqlTest {
                 prest.addBatch();
                 if((i+1)%point==0){
                     prest.executeBatch();
+                    System.out.println("执行第"+(i+1)/point+"批");
                 }    
             } 
             // prest.executeBatch();      
             conn.commit();       
             long b=System.currentTimeMillis();  
-            print("MySql批量插入10万条记录到"+tableName,a,b);
+            print("MySql批量插入"+count+"条记录到"+tableName,a,b,count);
         } catch (Exception ex) {  
             ex.printStackTrace();  
         }finally{  
@@ -211,6 +217,54 @@ public class MysqlTest {
         }  
     }
 
+    /** 
+     * mysql批量插入记录,div为划分的个数，每次重新建立连接
+     */  
+    public static void insertBatchReConn(List<tableStruct> values, String tableName,String mode,int div){
+        Connection conn=getConn("mysql");  
+        clear(conn,tableName);
+        close(conn);
+        int batchsize=count/div;
+        long a=System.currentTimeMillis();
+        for(int i=0;i<div;i++){
+            System.out.println("执行第"+(i+1)+"批");
+            List<tableStruct> subValue=values.subList(batchsize*i,batchsize*(i+1)); 
+            insertOneBatch(subValue,tableName,mode,batchsize);
+        }
+        long b=System.currentTimeMillis(); 
+        print("MySql分"+div+"次批量插入"+count+"条记录到"+tableName,a,b,count);
+    }
+
+    /** 
+     * 批量提交一次
+     */ 
+    public static void insertOneBatch(List<tableStruct> values, String tableName,String mode,int batchsize){  
+        String sql="insert "+mode+" into "+ tableName+ " values(?,?,?,?,?)";
+        Connection conn=getConn("mysql");  
+        try {        
+            PreparedStatement prest = conn.prepareStatement(sql);        
+            long a=System.currentTimeMillis();  
+            for(int i=0;i<batchsize;i++){
+                prest.setString(1,values.get(i).name);
+                prest.setString(2,values.get(i).birth);        
+                prest.setInt(3,values.get(i).id);
+                prest.setInt(4,values.get(i).weight);
+                prest.setInt(5,values.get(i).height);        
+                prest.addBatch();
+            }
+            prest.executeBatch();      
+            conn.commit();       
+            long b=System.currentTimeMillis();  
+            print("MySql批量插入"+batchsize+"条记录到"+tableName,a,b,batchsize);
+        } catch (Exception ex) {  
+            ex.printStackTrace();  
+        }finally{  
+            close(conn);    
+        }  
+    }
+    /** 
+     * load文件块
+     */ 
     public static void loadAll(String tableName,String mode){
         String loadSql="load data infile '/mnt/mysqlTest/data.txt' "+mode+ " into table "+tableName+ 
          " FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n'";
@@ -222,7 +276,7 @@ public class MysqlTest {
             prest.execute();
             conn.commit();       
             long b=System.currentTimeMillis();  
-            print("MySql一次load ("+mode+") 10万条记录到"+tableName,a,b);
+            print("MySql一次load ("+mode+")"+count+"条记录到"+tableName,a,b,count);
         } catch (Exception ex) {  
             ex.printStackTrace();  
         }finally{  

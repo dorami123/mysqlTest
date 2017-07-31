@@ -1,6 +1,6 @@
 import random
 
-num=100000
+num=10000000
 rr=range(num)
 random.shuffle(rr)  
 file=open('data.txt','w')  

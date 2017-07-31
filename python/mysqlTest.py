@@ -30,7 +30,7 @@ import MySQLdb
 
 
 def printResults(key,ts,te):
-    speed=100000/(te-ts)
+    speed=10000000/(te-ts)
     print(key+",用时 %f"%(te-ts)+" s,平均每秒执行 %d"%speed+"条")
     print("----------------------------------")
 
@@ -90,9 +90,10 @@ def insertBatch(tableName,div,values,mode='ignore'):
         for i in range(div):
             # 该语句对insert做专门的优化,相当于执行一条insert: 
             cur.executemany(stmt,values[num/div*i:num/div*(i+1)])
+            print('执行第%d批'%(i+1))
         conn.commit()
         te=time.time()
-        printResults("MySql批量插入10万条记录到"+tableName,ts,te)
+        printResults("MySql批量插入记录到"+tableName,ts,te)
     except MySQLdb.Error,e:
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])
         conn.rollback()
@@ -135,13 +136,13 @@ if __name__ == '__main__':
     # print(num)
     # ------insert和load到有数据的表3-----
     clear_table(tableName[2])
-    insertBatch(tableName[2],10,values)
-    print('begin')
-    insertBatch(tableName[2],10,values)
-    clear_table(tableName[2])
-    insertBatch(tableName[2],10,values)
-    print('begin')
-    loadAll(tableName[2])
+    insertBatch(tableName[2],100,values)
+    # print('begin')
+    # insertBatch(tableName[2],10,values)
+    # clear_table(tableName[2])
+    # insertBatch(tableName[2],10,values)
+    # print('begin')
+    # loadAll(tableName[2])
 
 
     # for i in range(3):
