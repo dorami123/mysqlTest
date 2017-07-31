@@ -30,7 +30,7 @@ import MySQLdb
 
 
 def printResults(key,ts,te):
-    speed=10000000/(te-ts)
+    speed=100000/(te-ts)
     print(key+",用时 %f"%(te-ts)+" s,平均每秒执行 %d"%speed+"条")
     print("----------------------------------")
 
@@ -125,16 +125,31 @@ def loadAll(tableName,mode='ignore',disable=False):
 if __name__ == '__main__':
     tableName=['test1','test2','test3']
     
+    # file=open('../data.txt')
+    # lines=file.readlines()
+    # file.close()
+    # values=[]
+    clear_table(tableName[2])
+    ts2=time.time()
     file=open('../data.txt')
-    lines=file.readlines()
+    for i in range(100):
+        values=[]
+        for j in range(100000):
+            line=file.readline()
+            l=line.rstrip('\n').split(',')
+            ll=(l[0][1:-1],l[1][1:-1],int(l[2]),int(l[3]),int(l[4]))
+            values.append(ll)
+        insertBatch(tableName[2],1,values)
+        del values
+    te2=time.time()
+    printResults("MySql批量插入记录到"+tableName[2],ts2,te2)
     file.close()
-    values=[]
 
-    for line in lines:
-        l=line.rstrip('\n').split(',')
-        ll=(l[0][1:-1],l[1][1:-1],int(l[2]),int(l[3]),int(l[4]))
-        values.append(ll)
-    num=len(values)
+    # for line in lines:
+    #     l=line.rstrip('\n').split(',')
+    #     ll=(l[0][1:-1],l[1][1:-1],int(l[2]),int(l[3]),int(l[4]))
+    #     values.append(ll)
+    # num=len(values)
     # print(num)
     
     # ------insert和load到有数据的表3-----
@@ -148,7 +163,7 @@ if __name__ == '__main__':
     # loadAll(tableName[2])
 
     # ---1千万条数据，分100份插入--------
-    insertBatch(tableName[2],100,values)
+    # insertBatch(tableName[2],100,values)
 
 
     # insertBatch(tableName[0],5,values)
