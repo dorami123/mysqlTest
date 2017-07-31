@@ -88,9 +88,11 @@ def insertBatch(tableName,div,values,mode='ignore'):
         stmt1="insert %s into %s"%(mode,tableName) 
         stmt=stmt1+" values(%s,%s,%s,%s,%s)"
         for i in range(div):
-            # 该语句对insert做专门的优化,相当于执行一条insert: 
+            # 该语句对insert做专门的优化,相当于执行一条insert:
+            ts1=time.time()
             cur.executemany(stmt,values[num/div*i:num/div*(i+1)])
-            print('执行第%d批'%(i+1))
+            te1=time.time()
+            print('执行第%d批,用时%f'%((i+1),(te1-ts1)))
         conn.commit()
         te=time.time()
         printResults("MySql批量插入记录到"+tableName,ts,te)
@@ -134,9 +136,10 @@ if __name__ == '__main__':
         values.append(ll)
     num=len(values)
     # print(num)
+    
     # ------insert和load到有数据的表3-----
-    clear_table(tableName[2])
-    insertBatch(tableName[2],100,values)
+    # clear_table(tableName[2])
+    # insertBatch(tableName[2],10,values)
     # print('begin')
     # insertBatch(tableName[2],10,values)
     # clear_table(tableName[2])
@@ -144,19 +147,10 @@ if __name__ == '__main__':
     # print('begin')
     # loadAll(tableName[2])
 
+    # ---1千万条数据，分100份插入--------
+    insertBatch(tableName[2],100,values)
 
-    # for i in range(3):
-    #     clear_table(tableName[i])
-    #     insertPerline(tableName[i],values)
 
-    #     clear_table(tableName[i])
-    #     insertBatch(tableName[i],5,values)
-
-    #     clear_table(tableName[i])
-    #     loadAll(tableName[i])
-
-    #     clear_table(tableName[i])
-    #     loadAll(tableName[i],'replace')
     # insertBatch(tableName[0],5,values)
     # insertBatch(5,values,tableName)
     # loadAll(tableName[2],'ignore')

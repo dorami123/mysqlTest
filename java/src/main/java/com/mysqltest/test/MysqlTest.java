@@ -50,7 +50,7 @@ public class MysqlTest {
         // }
 
         // -------java和python的比较-------------
-        // insertBatch(values,tableName[2],"ignore",100000);
+        insertBatch(values,tableName[2],"ignore",100000);
         // loadAll(tableName[2],"ignore");
         // loadAll(tableName[2],"replace");
         // -------分批load-------------
@@ -58,7 +58,7 @@ public class MysqlTest {
         // -------java connection-------------
 
         // mysql批量插入记录,div为划分的个数，每次重新建立连接
-        insertBatchReConn(values,tableName[2],"ignore",100);
+        // insertBatchReConn(values,tableName[2],"ignore",100);
 
     }  
 
@@ -202,8 +202,11 @@ public class MysqlTest {
                 prest.setInt(5,values.get(i).height);        
                 prest.addBatch();
                 if((i+1)%point==0){
+                    long a1=System.currentTimeMillis();
                     prest.executeBatch();
-                    System.out.println("执行第"+(i+1)/point+"批");
+                    long b1=System.currentTimeMillis();
+                    double c=point*1000.0/(b1-a1);
+                    System.out.println("执行第"+(i+1)/point+"批，每秒执行"+c+"条");
                 }    
             } 
             // prest.executeBatch();      
