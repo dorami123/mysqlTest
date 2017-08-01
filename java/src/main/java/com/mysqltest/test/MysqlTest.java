@@ -59,8 +59,14 @@ public class MysqlTest {
         // -------java connection-------------
 
         // mysql批量插入记录,div为划分的个数，每次重新建立连接
+        // try{
+        //     insertBatchReConn(inputPath,tableName[2],"ignore",100);
+        // }catch(IOException e){
+        //     System.out.println("inputPath error");
+        // }
+        //建立一次链接
         try{
-            insertBatchReConn(inputPath,tableName[2],"ignore",100);
+            insertBatchReConn2(inputPath,tableName[2],"ignore",100);
         }catch(IOException e){
             System.out.println("inputPath error");
         }
@@ -284,6 +290,68 @@ public class MysqlTest {
             close(conn);    
         }  
     }
+
+    /** 
+     * mysql批量插入记录,div为划分的个数，建立一次链接
+     */  
+    public static void insertBatchReConn2(String inputPath, String tableName,String mode,int div)throws IOException{
+        Connection conn=getConn("mysql");  
+        clear(conn,tableName);
+        // close(conn);
+        int batchsize=count/div;
+
+        FileReader reader = new FileReader(inputPath);
+        BufferedReader br = new BufferedReader(reader);  
+
+        long a=System.currentTimeMillis();
+        // Connection conn=getConn("mysql"); 
+        for(int i=0;i<div;i++){
+            List<tableStruct> values=new ArrayList<tableStruct>();
+            for (int j=0;j<batchsize;j++){
+                tableStruct value=new tableStruct();
+                String[] str=new String[5];
+                str=br.readLine().split("\\,");
+                value.name=str[0].substring(1,9);
+                value.birth=str[1].substring(1,11);
+                value.id=Integer.parseInt(str[2]);
+                value.height=Integer.parseInt(str[3]);
+                value.weight=Integer.parseInt(str[4]);      
+                values.add(value);
+            }
+            System.out.println("执行第"+(i+1)+"批");
+            insertOneBatch2(values,tableName,mode,batchsize,conn);
+        }
+        long b=System.currentTimeMillis(); 
+        print("MySql分"+div+"次批量插入"+count+"条记录到"+tableName,a,b,count);
+    }
+
+    /** 
+     * 批量提交一次
+     */ 
+    public static void insertOneBatch2(List<tableStruct> values, String tableName,String mode,int batchsize,Connection conn){  
+        String sql="insert "+mode+" into "+ tableName+ " values(?,?,?,?,?)";
+        try {        
+            PreparedStatement prest = conn.prepareStatement(sql);        
+            long a=System.currentTimeMillis();  
+            for(int i=0;i<batchsize;i++){
+                prest.setString(1,values.get(i).name);
+                prest.setString(2,values.get(i).birth);        
+                prest.setInt(3,values.get(i).id);
+                prest.setInt(4,values.get(i).weight);
+                prest.setInt(5,values.get(i).height);        
+                prest.addBatch();
+            }
+            prest.executeBatch();      
+            conn.commit();       
+            long b=System.currentTimeMillis();  
+            print("MySql批量插入"+batchsize+"条记录到"+tableName,a,b,batchsize);
+        } catch (Exception ex) {  
+            ex.printStackTrace();  
+        }
+    }
+
+
+
     /** 
      * load文件块
      */ 
