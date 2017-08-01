@@ -68,11 +68,12 @@ MyISAM引擎的规律和InnoDB规律相似，但是MyISAM引擎的load性能要�
 ### 测试java和python的insert效率，分为100批，每个批次都重新建立连接。
 
 python平均插入速度为22271条/s，java为22458条/s (含读取数据的时间)
-<div align=center><img width="640" height="480" src="https://github.com/dorami123/mysqlTest/blob/master/graph/insertbigBatchsizeB.png"/></div>
+<div align=center><img width="640" height="480" src="https://github.com/dorami123/mysqlTest/blob/master/graph/insertbigBatchsize.png"/></div>
+上图为100批次插入单次的插入速度曲线。
 
 ### 测试java的insert效率，分为100批，只建立一次连接
 
-MySql分100次批量插入10000000条记录到test3,用时466.253 s,平均每秒执行21447.583179089463条
+MySql分100次批量插入10000000条记录到test3,用时466.253 s,平均每秒执行21447.5条
 
 
 ### 小结：
