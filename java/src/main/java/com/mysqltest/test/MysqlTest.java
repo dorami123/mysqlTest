@@ -25,13 +25,14 @@ public class MysqlTest {
     public static void main(String[] args) {  
         String[] tableName={"test1","test2","test3"};
         String inputPath="/mnt/mysqlTest/data.txt";
-        List<tableStruct> values;
-        try{
-            values=getData(inputPath,10000000);
-        }catch(IOException e){
-            System.out.println("inputPath error");
-            values=null;
-        }
+        // --------------一次性读完表-----------------------
+        // List<tableStruct> values;
+        // try{
+        //     values=getData(inputPath,10000000);
+        // }catch(IOException e){
+        //     System.out.println("inputPath error");
+        //     values=null;
+        // }
         // --------load 和分批insert效果比较-----
         // for (String tab:tableName){
         //     // insertPerline(values,tab,"ignore");
@@ -50,7 +51,7 @@ public class MysqlTest {
         // }
 
         // -------java和python的比较-------------
-        insertBatch(values,tableName[2],"ignore",100000);
+        // insertBatch(values,tableName[2],"ignore",100000);
         // loadAll(tableName[2],"ignore");
         // loadAll(tableName[2],"replace");
         // -------分批load-------------
@@ -58,8 +59,11 @@ public class MysqlTest {
         // -------java connection-------------
 
         // mysql批量插入记录,div为划分的个数，每次重新建立连接
-        // insertBatchReConn(values,tableName[2],"ignore",100);
-
+        try{
+            insertBatchReConn(inputPath,tableName[2],"ignore",100);
+        }catch(IOException e){
+            System.out.println("inputPath error");
+        }
     }  
 
     
@@ -223,16 +227,31 @@ public class MysqlTest {
     /** 
      * mysql批量插入记录,div为划分的个数，每次重新建立连接
      */  
-    public static void insertBatchReConn(List<tableStruct> values, String tableName,String mode,int div){
+    public static void insertBatchReConn(String inputPath, String tableName,String mode,int div)throws IOException{
         Connection conn=getConn("mysql");  
         clear(conn,tableName);
         close(conn);
         int batchsize=count/div;
+
+        FileReader reader = new FileReader(inputPath);
+        BufferedReader br = new BufferedReader(reader);  
+
         long a=System.currentTimeMillis();
         for(int i=0;i<div;i++){
+            List<tableStruct> values=new ArrayList<tableStruct>();
+            for (int j=0;j<batchsize;j++){
+                tableStruct value=new tableStruct();
+                String[] str=new String[5];
+                str=br.readLine().split("\\,");
+                value.name=str[0].substring(1,9);
+                value.birth=str[1].substring(1,11);
+                value.id=Integer.parseInt(str[2]);
+                value.height=Integer.parseInt(str[3]);
+                value.weight=Integer.parseInt(str[4]);      
+                values.add(value);
+            }
             System.out.println("执行第"+(i+1)+"批");
-            List<tableStruct> subValue=values.subList(batchsize*i,batchsize*(i+1)); 
-            insertOneBatch(subValue,tableName,mode,batchsize);
+            insertOneBatch(values,tableName,mode,batchsize);
         }
         long b=System.currentTimeMillis(); 
         print("MySql分"+div+"次批量插入"+count+"条记录到"+tableName,a,b,count);

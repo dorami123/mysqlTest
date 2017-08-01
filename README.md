@@ -58,8 +58,18 @@ MyISAM引擎的规律和InnoDB规律相似，但是MyISAM引擎的load性能要�
 [If you use LOAD DATA INFILE on an empty MyISAM table, all nonunique indexes are created in a separate batch (as for REPAIR TABLE). Normally, this makes LOAD DATA INFILE much faster when you have many indexes. ](https://dev.mysql.com/doc/refman/5.7/en/load-data.html)
 # 4.使用java和python的读入的比较；
 
-##### 两种引擎下，使用空表test3，比较python和java的写性能
+##### 4.1 两种引擎下，使用空表test3，比较python和java的写性能(100000条数据)
 <div align=center><img width="640" height="480" src="https://github.com/dorami123/mysqlTest/blob/master/graph/MyISAM%20vs%20InnoDB.png"/></div>
+
+##### 4.2 为了进一步比较python和java的insert性能，使用10000000条数据做测试。
+
+测试用机器：内存6266MB,CPU i5 7500,Mysql 引擎 为MyISAM。
+
+##### 测试java和python的insert效率，数据量提高到1000万，分为100批，每个批次都重新建立连接。
+
+python平均插入速度为22271条/s，java为22458条/s (含读取数据的时间)
+<div align=center><img width="640" height="480" src="https://github.com/dorami123/mysqlTest/blob/master/graph/InsertbigBatchsizeB.png"/></div>
+
 
 ##### 小结：
 显而易见，使用python和java访问mysql，性能接近。
