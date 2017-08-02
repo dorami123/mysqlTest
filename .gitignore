@@ -1,7 +1,6 @@
-data.txt
-java/target
-java/record
-test
-graph/datagraph
-.DS_Store
-graph/.DS_Store
+/data.txt
+/java/target
+/java/record
+/graph/datagraph
+/.DS_Store
+/graph/.DS_Store
