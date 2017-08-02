@@ -1,9 +1,9 @@
 package com.mysqltest.test;
-import java.sql.Connection;  
-import java.sql.DriverManager;  
+
+import com.mysqltest.test.utils.ConUtil;
+import java.sql.Connection;   
 import java.sql.PreparedStatement;  
 import java.sql.SQLException;  
-import java.sql.Statement;
 import java.sql.Date;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,8 +18,8 @@ public class MysqlTest {
 	static String mySqlUrl="jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true";
 	static String mySqlUserName="root";  
 	static String mySqlPassword="cloudera";  
-	
-	//batchsize
+	static ConUtil connect=new ConUtil(mySqlUrl,mySqlUserName,mySqlPassword);
+    //batchsize
 	// static int[] divPoint={count,10000,1000,100,10,1};
 	
     public static void main(String[] args) {  
@@ -102,58 +102,6 @@ public class MysqlTest {
         return values;
     }
     /**
-     * 创建连接
-     * @return
-     */
-    public static Connection getConn(String flag){
-    	long a=System.currentTimeMillis();
-        try {        
-        	if("mysql".equals(flag)){
-                Class.forName("com.mysql.jdbc.Driver");        
-                Connection conn =  DriverManager.getConnection(mySqlUrl, mySqlUserName, mySqlPassword);     
-                conn.setAutoCommit(false);  
-                return conn;
-        	}else{
-        		System.out.println();
-        		throw new RuntimeException("flag参数不正确,flag="+flag);
-        	}
-        }catch (Exception ex) {  
-            ex.printStackTrace();  
-        }finally{  
-        	long b=System.currentTimeMillis();  
-            System.out.println("创建连接用时"+ (b-a)+" ms"); 
-        }
-        return null;
-    }
-    /**
-     * 关闭连接
-     * @return
-     */
-    public static void close(Connection conn){
-    	 try {  
-             if(conn!=null){
-            	 conn.close();  
-             }
-         } catch (SQLException e) {  
-             e.printStackTrace();  
-         }
-    }
-    /**
-     * 删除旧数据
-     * @return
-     */
-    public static void clear(Connection conn, String tableName){
-    	try{
-            Statement st=conn.createStatement();
-            boolean bl=st.execute("truncate table "+tableName);
-            conn.commit();
-            st.close();
-            System.out.println("执行清理操作："+(bl==false?"成功":"失败"));
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
-    }
-    /**
      * 打印信息
      * @return
      */
@@ -168,8 +116,8 @@ public class MysqlTest {
      */  
     public static void insertPerline(List<tableStruct> values,String tableName,String mode){  
         String sql="insert "+mode+" into "+ tableName+ " values(?,?,?,?,?)";
-        Connection conn=getConn("mysql");  
-        clear(conn,tableName);
+        Connection conn=ConUtil.getConn("mysql");  
+        ConUtil.clear(conn,tableName);
         try {        
             PreparedStatement prest = conn.prepareStatement(sql);        
             long a=System.currentTimeMillis();  
@@ -190,7 +138,7 @@ public class MysqlTest {
         } catch (Exception ex) {  
             ex.printStackTrace();  
         }finally{  
-            close(conn);    
+            ConUtil.close(conn);    
         }  
     }  
     
@@ -199,8 +147,8 @@ public class MysqlTest {
      */  
     public static void insertBatch(List<tableStruct> values, String tableName,String mode,int point){  
         String sql="insert "+mode+" into "+ tableName+ " values(?,?,?,?,?)";
-        Connection conn=getConn("mysql");  
-        clear(conn,tableName);
+        Connection conn=ConUtil.getConn("mysql");  
+        ConUtil.clear(conn,tableName);
         try {        
             PreparedStatement prest = conn.prepareStatement(sql);        
             long a=System.currentTimeMillis();  
@@ -226,7 +174,7 @@ public class MysqlTest {
         } catch (Exception ex) {  
             ex.printStackTrace();  
         }finally{  
-            close(conn);    
+            ConUtil.close(conn);    
         }  
     }
 
@@ -234,9 +182,9 @@ public class MysqlTest {
      * mysql批量插入记录,div为划分的个数，每次重新建立连接
      */  
     public static void insertBatchReConn(String inputPath, String tableName,String mode,int div)throws IOException{
-        Connection conn=getConn("mysql");  
-        clear(conn,tableName);
-        close(conn);
+        Connection conn=ConUtil.getConn("mysql");  
+        ConUtil.clear(conn,tableName);
+        ConUtil.close(conn);
         int batchsize=count/div;
 
         FileReader reader = new FileReader(inputPath);
@@ -268,7 +216,7 @@ public class MysqlTest {
      */ 
     public static void insertOneBatch(List<tableStruct> values, String tableName,String mode,int batchsize){  
         String sql="insert "+mode+" into "+ tableName+ " values(?,?,?,?,?)";
-        Connection conn=getConn("mysql");  
+        Connection conn=ConUtil.getConn("mysql");  
         try {        
             PreparedStatement prest = conn.prepareStatement(sql);        
             long a=System.currentTimeMillis();  
@@ -287,7 +235,7 @@ public class MysqlTest {
         } catch (Exception ex) {  
             ex.printStackTrace();  
         }finally{  
-            close(conn);    
+            ConUtil.close(conn);    
         }  
     }
 
@@ -295,16 +243,16 @@ public class MysqlTest {
      * mysql批量插入记录,div为划分的个数，建立一次链接
      */  
     public static void insertBatchReConn2(String inputPath, String tableName,String mode,int div)throws IOException{
-        Connection conn=getConn("mysql");  
-        clear(conn,tableName);
-        // close(conn);
+        Connection conn=ConUtil.getConn("mysql");  
+        ConUtil.clear(conn,tableName);
+        // ConUtil.close(conn);
         int batchsize=count/div;
 
         FileReader reader = new FileReader(inputPath);
         BufferedReader br = new BufferedReader(reader);  
 
         long a=System.currentTimeMillis();
-        // Connection conn=getConn("mysql"); 
+        // Connection conn=ConUtil.getConn("mysql"); 
         for(int i=0;i<div;i++){
             List<tableStruct> values=new ArrayList<tableStruct>();
             for (int j=0;j<batchsize;j++){
@@ -357,9 +305,9 @@ public class MysqlTest {
      */ 
     public static void loadAll(String tableName,String mode){
         String loadSql="load data infile '/mnt/mysqlTest/data.txt' "+mode+ " into table "+tableName+ 
-         " FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n'";
-        Connection conn=getConn("mysql");  
-        clear(conn,tableName);
+         " FIELDS TERMINATED BY ',' OPTIONALLY ENConUtil.CLOSED BY '\"' LINES TERMINATED BY '\n'";
+        Connection conn=ConUtil.getConn("mysql");  
+        ConUtil.clear(conn,tableName);
         try{
             PreparedStatement prest = conn.prepareStatement(loadSql);        
             long a=System.currentTimeMillis(); 
@@ -370,7 +318,7 @@ public class MysqlTest {
         } catch (Exception ex) {  
             ex.printStackTrace();  
         }finally{  
-            close(conn);              
+            ConUtil.close(conn);              
         }
     }  
  

@@ -63,6 +63,17 @@ index (name)
 )engine = MyISAM;
 -- )engine = MyISAM;
 
+CREATE TABLE if not exists test4(  
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,  
+  `a` int(11) NOT NULL,  
+  `b` bigint(20) unsigned NOT NULL,  
+  `c` bigint(20) unsigned NOT NULL,  
+  `d` int(10) unsigned NOT NULL,  
+  `e` int(10) unsigned NOT NULL,  
+  `f` int(10) unsigned NOT NULL,  
+  PRIMARY KEY (`id`),  
+  KEY `a_b` (`a`,`b`)  
+) ENGINE=InnoDB;  
 -- SELECT * INTO OUTFILE '/mnt/mysqlTest/data.txt'
 -- FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 -- LINES TERMINATED BY '\n'
