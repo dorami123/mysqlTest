@@ -143,9 +143,9 @@ public class MysqlTest {
     }  
     
     /** 
-     * mysql批量插入记录,point为batchsize 
+     * mysql批量插入记录
      */  
-    public static void insertBatch(List<tableStruct> values, String tableName,String mode,int point){  
+    public static void insertBatch(List<tableStruct> values, String tableName,String mode,int batchsize){  
         String sql="insert "+mode+" into "+ tableName+ " values(?,?,?,?,?)";
         Connection conn=ConUtil.getConn("mysql");  
         ConUtil.clear(conn,tableName);
@@ -159,12 +159,12 @@ public class MysqlTest {
                 prest.setInt(4,values.get(i).weight);
                 prest.setInt(5,values.get(i).height);        
                 prest.addBatch();
-                if((i+1)%point==0){
+                if((i+1)%batchsize==0){
                     long a1=System.currentTimeMillis();
                     prest.executeBatch();
                     long b1=System.currentTimeMillis();
-                    double c=point*1000.0/(b1-a1);
-                    System.out.println("执行第"+(i+1)/point+"批，每秒执行"+c+"条");
+                    double c=batchsize*1000.0/(b1-a1);
+                    System.out.println("执行第"+(i+1)/batchsize+"批，每秒执行"+c+"条");
                 }    
             } 
             // prest.executeBatch();      

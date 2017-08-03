@@ -30,7 +30,7 @@ public class LoadData2MySQL {
 	public static InputStream getTestDataInputStream() {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 1; i <= 10; i++) {
-			for (int j = 0; j <= 10000; j++) {
+			for (int j = 0; j < 10000; j++) {
 
 				builder.append(4);
 				builder.append(",");
@@ -77,6 +77,7 @@ public class LoadData2MySQL {
 			result = mysqlStatement.executeUpdate();
 			conn.commit();
 		}
+		ConUtil.close(conn);
 		return result;
 	}
 
