@@ -73,7 +73,61 @@ CREATE TABLE if not exists test4(
   `f` int(10) unsigned NOT NULL,  
   PRIMARY KEY (`id`),  
   KEY `a_b` (`a`,`b`)  
-) ENGINE=InnoDB;  
+) ENGINE=MyISAM;
+
+
+CREATE TABLE if not exists test5(  
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,  
+  `a` date NOT NULL,  
+  `b` int unsigned NOT NULL,  
+  `c` bigint unsigned NOT NULL,  
+  `d` double unsigned NOT NULL,  
+  `e` varchar(20) NOT NULL,  
+  `f` TIMESTAMP NOT NULL,
+  `g` blob NOT NULL , 
+  PRIMARY KEY (`id`),  
+  index `a` (`a`)  
+) ENGINE=MyISAM;
+
+CREATE TABLE if not exists test6(  
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,  
+  `a` date NOT NULL,  
+  `b` int unsigned NOT NULL,  
+  `c` bigint unsigned NOT NULL,  
+  `d` double unsigned NOT NULL,  
+  `e` varchar(20) NOT NULL,  
+  `f` TIMESTAMP NOT NULL,
+  `g` blob NOT NULL , 
+  PRIMARY KEY (`id`),  
+  index `a` (`a`)  
+) ENGINE=MyISAM;
+
+CREATE TABLE if not exists test7(  
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,  
+  `a` date NOT NULL,  
+  `b` int unsigned NOT NULL,  
+  `c` bigint unsigned NOT NULL,  
+  `d` double unsigned NOT NULL,  
+  `e` varchar(20) NOT NULL,  
+  `f` TIMESTAMP NOT NULL,
+  `g` blob NOT NULL , 
+  PRIMARY KEY (`id`),  
+  index `a` (`a`)  
+) ENGINE=MyISAM;    
+
+
+
+
+CREATE TABLE if not exists test8(  
+  `a` date NOT NULL,  
+  `b` int unsigned NOT NULL,  
+  `c` bigint unsigned NOT NULL,  
+  `d` double unsigned NOT NULL,  
+  `e` varchar(20) NOT NULL,  
+  `f` TIMESTAMP NOT NULL,
+  `g` blob NOT NULL ,   
+  index `a` (`a`)  
+) ENGINE=MyISAM; 
 -- SELECT * INTO OUTFILE '/mnt/mysqlTest/data.txt'
 -- FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 -- LINES TERMINATED BY '\n'
@@ -81,3 +135,55 @@ CREATE TABLE if not exists test4(
 
 -- ALTER TABLE ... DISABLE KEYS
 -- ALTER TABLE ... ENABLE KEYS 
+
+CREATE TABLE if not exists test(  
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,  
+  `a` date NOT NULL,  
+  `b` int unsigned NOT NULL,  
+  `c` bigint unsigned NOT NULL,  
+  `d` double unsigned NOT NULL,  
+  `e` varchar(20) NOT NULL,  
+  `f` TIMESTAMP NOT NULL,
+  `g` blob NOT NULL , 
+  PRIMARY KEY (`id`),  
+  index `a` (`a`)  
+) ;
+
+
+CREATE TABLE if not exists test2(  
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,  
+  `a` date NOT NULL,  
+  `b` int unsigned NOT NULL,  
+  `c` bigint unsigned NOT NULL,  
+  `d` double unsigned NOT NULL,  
+  `e` varchar(20) NOT NULL,  
+  `f` TIMESTAMP NOT NULL,
+  `g` blob NOT NULL , 
+  PRIMARY KEY (`id`),  
+  index `a` (`a`)  
+) engine=INNODB;
+
+CREATE DATABASE IF NOT EXISTS zhaoxiao
+COMMENT 'hivereadertest'
+location 'hdfs://testcluster/user/gzzhaoxiao/warehouse2/';
+
+
+create table if not exists test(
+  id int,
+  a date,
+  b int,
+  c bigint,
+  d double,
+  e string,
+  f date,
+  g string
+)
+ ROW FORMAT DELIMITED
+   FIELDS TERMINATED BY '\t'
+ STORED AS TEXTFILE;
+
+ LOAD DATA INFILE 'test.txt' INTO TABLE test2
+  FIELDS TERMINATED BY '\t';
+
+
+ insert into test2 values(1,2017-08-18,1729,570704,0.139100298594,fake00000001,2017-08-18,407);
