@@ -65,13 +65,13 @@ Server version: 5.5.37-0+wheezy1-log (Debian)
 
 ##### 2.1 比较load和insert在不同channel下的写入性能 
 Innodb
-<div align=center><img width="640" height="240" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_innodb.png"/></div>
+<div align=center><img width="600" height="360" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_innodb.png"/></div>
 
 MyIASM
-<div align=center><img width="640" height="240" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_myiasm.png"/></div>
+<div align=center><img width="600" height="360" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_myiasm.png"/></div>
 
 ##### 2.2 比较Innodb和MyIASM两种引擎的写入性能
-<div align=center><img width="640" height="240" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql.png"/></div>
+<div align=center><img width="600" height="360" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql.png"/></div>
 
 
 **小结：**
