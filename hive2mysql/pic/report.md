@@ -3,8 +3,8 @@
 >* 比较load和insert在不同channel下的写入性能 
 >* 比较Innodb和MyIASM两种引擎的写入性能
 
-#### 1. 环境准备
-##### 1.1 数据特征
+### 1. 环境准备
+#### 1.1 数据特征
 测试数据有1000W行
 
 建表语句：
@@ -52,7 +52,7 @@ f:2017-08-22
 g:113
 
 ```
-##### 1.2机器参数
+#### 1.2机器参数
 
 执行DataX的机器：
 
@@ -63,7 +63,7 @@ Mysql数据库
 地址：10.120.173.179
 Server version: 5.5.37-0+wheezy1-log (Debian)
 
-##### 1.3 DataX配置
+#### 1.3 DataX配置
 ```
 {
     "job": {
@@ -137,19 +137,19 @@ Server version: 5.5.37-0+wheezy1-log (Debian)
 ```
 
 
-#### 2 测试报告
+### 2 测试报告
 
-##### 2.1 比较load和insert在不同channel下的写入性能 
+#### 2.1 比较load和insert在不同channel下的写入性能 
 Innodb
-<div align=center><img width="600" height="360" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_innodb.png"/></div>
+<div align=center><img width="500" height="300" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_innodb.png"/></div>
 
 MyIASM
-<div align=center><img width="600" height="360" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_myiasm.png"/></div>
+<div align=center><img width="500" height="300" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_myiasm.png"/></div>
 
 **小结：**
 在单线程写时，load的性能要优于insert。在多线程写时，insert的性能有比较大的提升，这时用insert性能更好。
-##### 2.2 比较Innodb和MyIASM两种引擎的写入性能
-<div align=center><img width="600" height="360" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql.png"/></div>
+#### 2.2 比较Innodb和MyIASM两种引擎的写入性能
+<div align=center><img width="500" height="300" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql.png"/></div>
 
 **小结：**
 在并发写入时，使用MyIASM引擎时，insert性能要优于使用Innodb引擎。
@@ -158,6 +158,9 @@ MyIASM
 > a.关于MyIASM的并发支持
 
 通常来说，在MyISAM里读写操作是串行的，但当对同一个表进行查询和插入操作时，为了降低锁竞争的频率，根据concurrent_insert的设置，MyISAM是可以并行处理查询和插入的：
+
 当concurrent_insert=0时，不允许并发插入功能。
+
 当concurrent_insert=1时，允许对没有洞的表使用并发插入，新数据位于数据文件结尾（缺省）。
+
 当concurrent_insert=2时，不管表有没有洞，都允许在数据文件结尾并发插入。
