@@ -56,7 +56,13 @@ g:113
 
 执行DataX的机器：
 
-Linux gdc-gw01-testing.i.nease.net 3.2.0-4-amd64 #1 SMP Debian 3.2.65-1 x86_64 GNU/Linux
+osInfo: Oracle Corporation 1.7 24.65-b04
+jvmInfo: Linux amd64 3.2.0-4-amd64
+cpu num: 8
+totalPhysicalMemory: 47.26G
+freePhysicalMemory: 7.71G
+maxFileDescriptorCount: 65535
+currentOpenFileDescriptorCount: 42
 
 Mysql数据库
 
@@ -164,3 +170,8 @@ MyIASM
 当concurrent_insert=1时，允许对没有洞的表使用并发插入，新数据位于数据文件结尾（缺省）。
 
 当concurrent_insert=2时，不管表有没有洞，都允许在数据文件结尾并发插入。
+
+> b.关于写入效率
+
+当线程数从3到4时，写入效率没有改善，这是因为reader端在切分时，有一定的数据倾斜，使得单
+个线程的速度比较慢。
