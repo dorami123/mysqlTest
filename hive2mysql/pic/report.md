@@ -56,11 +56,17 @@ g:113
 执行DataX的机器：
 
 osInfo: Oracle Corporation 1.7 24.65-b04
+
 jvmInfo: Linux amd64 3.2.0-4-amd64
+
 cpu num: 8
+
 totalPhysicalMemory: 47.26G
+
 freePhysicalMemory: 7.71G
+
 maxFileDescriptorCount: 65535
+
 currentOpenFileDescriptorCount: 42
 
 Mysql数据库
@@ -69,6 +75,12 @@ Mysql数据库
 Server version: 5.5.37-0+wheezy1-log (Debian)
 
 #### 1.3 DataX配置
+
+DataX jvm 参数：-Xms1G -Xmx1G
+
+[core.json设置(全部默认)](https://github.com/alibaba/DataX/blob/master/core/src/main/conf/core.json)
+
+
 ```
 {
     "job": {
@@ -158,6 +170,11 @@ MyIASM
 
 **小结：**
 在并发写入时，使用MyIASM引擎时，insert性能要优于使用Innodb引擎。
+
+### 3 总结
+a. 单线程写入时，使用load的性能要优于insert; 在使用datax并发写入时,宜采用insert方法，此时的性能与并发数基本成正比；
+
+b. MyISAM并发写的效率要略高于Innodb。使用MyISAM并发时需要设置concurrent_insert。
 
 
 **其他：**
