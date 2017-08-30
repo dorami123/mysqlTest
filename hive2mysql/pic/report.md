@@ -1,6 +1,6 @@
 ## dataX下hive到mysql性能测试报告
 测试内容：基于DataX
->* 比较load和insert在不同channel下的写入性能 
+>* 比较load和insert在不同channel下的写入性能
 >* 比较Innodb和MyIASM两种引擎的写入性能
 
 ### 1. 环境准备
@@ -26,28 +26,28 @@ create table if not exists test1(
 ```
 Mysql
 ```mysql
-CREATE TABLE if not exists test1(  
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,  
-  `a` date NOT NULL,  
-  `b` int unsigned NOT NULL,  
-  `c` bigint unsigned NOT NULL,  
-  `d` double unsigned NOT NULL,  
-  `e` varchar(20) NOT NULL,  
+CREATE TABLE if not exists test1(
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `a` date NOT NULL,
+  `b` int unsigned NOT NULL,
+  `c` bigint unsigned NOT NULL,
+  `d` double unsigned NOT NULL,
+  `e` varchar(20) NOT NULL,
   `f` TIMESTAMP NOT NULL,
-  `g` blob NOT NULL , 
-  PRIMARY KEY (`id`),  
-  index `a` (`a`)  
+  `g` blob NOT NULL ,
+  PRIMARY KEY (`id`),
+  index `a` (`a`)
 ) engine=MyISAM;
 ```
 单行记录如下：
 ```
-id:54600  
-a:2017-08-22  
-b:27169 
-c:221936  
-d:0.949828289499  
-e:fake00054600  
-f:2017-08-22  
+id:54600
+a:2017-08-22
+b:27169
+c:221936
+d:0.949828289499
+e:fake00054600
+f:2017-08-22
 g:113
 
 ```
@@ -134,7 +134,7 @@ DataX jvm 参数：-Xms1G -Xmx1G
                         "preSql": [
                             "truncate table @table"
                         ],
-                        "session": [ 
+                        "session": [
                         ],
                         "username": "***",
                         "writeMode": "load",
@@ -156,7 +156,7 @@ DataX jvm 参数：-Xms1G -Xmx1G
 
 ### 2 测试报告
 
-#### 2.1 比较load和insert在不同channel下的写入性能 
+#### 2.1 比较load和insert在不同channel下的写入性能
 Innodb
 <div align=center><img width="500" height="300" src="https://raw.githubusercontent.com/dorami123/mysqlTest/master/hive2mysql/pic/hive2mysql_innodb.png"/></div>
 
@@ -176,6 +176,7 @@ a. 单线程写入时，使用load的性能要优于insert; 在使用datax并发
 
 b. MyISAM并发写的效率要略高于Innodb。使用MyISAM并发时需要设置concurrent_insert。
 
+**测试过程中datax打印的详细信息见** [hive2mysql_测试记录](https://gitlab.nie.netease.com/gdcdev/datax/blob/feature-zx-mysqlwriter/mysqlwriter/doc/hive2mysql_%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95.md)
 
 **其他：**
 
