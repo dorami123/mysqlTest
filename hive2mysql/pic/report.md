@@ -80,6 +80,7 @@ DataX jvm 参数：-Xms1G -Xmx1G
 
 [core.json设置(全部默认)](https://github.com/alibaba/DataX/blob/master/core/src/main/conf/core.json)
 
+任务配置：
 
 ```
 {
