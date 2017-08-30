@@ -5,9 +5,8 @@
 
 ### 1. 环境准备
 #### 1.1 数据特征
-测试数据有1000W行
+测试数据有1000W行，batchsize=10w，建表语句如下：
 
-建表语句：
 Hive
 ```hive
 create table if not exists test1(
